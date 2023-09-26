@@ -1,12 +1,36 @@
 import os
-import fire
+import argparse
 import json
 from typing import Optional
 
-from rome import ROMEHyperParams, apply_rome_to_model
-from utils.template import data_transform
-from utils.loader import load_model_and_tokenizer
+from .rome import ROMEHyperParams, apply_rome_to_model
+from .utils.template import data_transform
+from .utils.loader import load_model_and_tokenizer
+from .utils.context import data
 
+def get_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data',
+                        default=data,
+                        help = 'data path or list of dictionary, contains keys:subject,target')
+
+    parser.add_argument('--config',
+                        default = 'qwen',
+                        help = 'config model name')
+
+    parser.add_argument('--template',
+                        default = 'qwen',
+                        help = 'template model name')
+
+    parser.add_argument('--output',
+                        default = None,
+                        help = 'output dir')
+          
+    config = parser.parse_args()
+    return config
+
+
+args = get_parser()
 
 def rome_edit(
     data: str, model: str, config: str, template: Optional[str] = "default",
@@ -37,8 +61,7 @@ def rome_edit(
         with open(data, "r", encoding="utf-8") as f:
             requests = json.load(f)
 
-    requests = data_transform(requests,template=template)
-
+    requests = [data_transform(request,template=template) for request in requests]
     model_old, tokenizer, batch_first = load_model_and_tokenizer(model, checkpointing)
 
     print("Retrieving hyperparameters..")
@@ -66,4 +89,4 @@ def rome_edit(
 
 
 if __name__ == "__main__":
-    fire.Fire(rome_edit)
+    rome_edit(args.data,args.model,args.config,args.template)

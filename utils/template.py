@@ -66,6 +66,6 @@ def data_transform(
         ):
     if 'prompt' not in data:
         model_prompt = Template(name = template)
-        data['prompt'] = model_prompt.get_prompt(data)
+        data['prompt'] = model_prompt.prompt
     return data
 

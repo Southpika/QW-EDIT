@@ -51,7 +51,6 @@ class ROMEHyperParams(HyperParams):
             mom2_dataset="wikipedia",
             mom2_n_samples=100000,
             mom2_dtype="float16",
-            template = Template(name=name)
         )
 
         if name == "gpt-j-6b":
